@@ -1,105 +1,237 @@
-#include "CField.h"
-#include "CMonster.h"
-#include "CEasyMonster.h"
-#include "CPlayer.h"
-
+ï»¿#include "CField.h"
 #include "Define.h"
 #include "pch.h"
+#include "CMonster.h"
+
+CField::CField() : m_pPlayer(nullptr)
+{
+}
 
 void CField::Initialize()
 {
-	
+	srand((unsigned)time(NULL));
+	// CEntity* ì´ì°¨ì› ë°°ì—´ ë§Œë“¤ê¸° ë° ëª¬ìŠ¤í„° ì•ì—ì„œë¶€í„° ì±„ìš°ê¸°
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (i * iMapXLen + j < iMonCnt)
+				m_Map[i][j] = new CMonster(rand()%2); // ëª¬ìŠ¤í„° ë‚œì´ë„ ëœë¤ ìƒì„±
+			else
+				m_Map[i][j] = nullptr;
+		}
+	}
+	// ë§µ 100íšŒ ì…”í”Œ
+	for (int i = 0; i < 100; ++i)
+	{
+		// í¬íƒˆ, í”Œë ˆì´ì–´ ìœ„ì¹˜ ì œì™¸í•˜ê¸°
+		int randNumX1 = rand() / iMapXLen;
+		int randNumY1 = rand() / iMapYLen;
+		int randNumX2 = rand() / iMapXLen;
+		int randNumY2 = rand() / iMapYLen;
+
+		if (randNumX1 <= 1 && randNumY1 == iMapYLen / 2)
+			continue;
+
+		swap(m_Map[randNumY1][randNumX1], m_Map[randNumY2][randNumX2]);
+	}
+
+	// ì…”í”Œëœ ìœ„ì¹˜ë¡œ CEntity*ì˜ ìœ„ì¹˜ê°’ ì¬ì¡°ì •
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (m_Map[i][j] == nullptr)
+			m_Map[i][j]->MovePos(i, j);
+		}
+	}
+
+	//í”Œë ˆì´ì–´ ìœ„ì¹˜ ì„¤ì •
+	m_pPlayer->MovePos(0, iMapYLen / 2);
+	m_Map[iMapYLen / 2][1] = m_pPlayer; // ì´í›„ ë§µ í•´ì œ ì‹œ ì–•ì€ ë³µì‚¬ ì£¼ì˜í•  ê²ƒ.
+
+	// í¬íƒˆ ìœ„ì¹˜ ì„¤ì •
+	m_Map[iMapYLen / 2][0] = new CEntity(ET_PORTAL); // ëª¬ìŠ¤í„°ì™€ ê°™ì´ í•´ì œ í•  ê²ƒ.
 }
 
 void CField::Update()
 {
-	// TEST
-	CMonster* pMonster = new CEasyMonster();
-	Fight(pMonster);
-}
-
-void CField::Release()
-{
-}
-
-int CField::Fight(CMonster* pMonster)
-{
-	cout << "¾Ñ! ¾ß»ıÀÇ " << pMonster->GetName() << "À»(¸¦) ¹ß°ßÇß´Ù!" << endl;
-	system("pause");
-
-	int iInput;
-
-	while (true)
+	while (1)
 	{
-		// ÇÃ·¹ÀÌ¾î ÅÏ
 		system("cls");
-		m_pPlayer->PrintInfo();
-		pMonster->PrintInfo();
-		
-		cout << "´ç½ÅÀÇ ÅÏÀÔ´Ï´Ù." << endl;
-		bool bTurnFinished = false;
+		Render();
+		int iInput;
 
-		while (true) // Æ÷¼Ç ¹Ì¼±ÅÃ ½Ã ´Ù½Ã ¼±ÅÃÇØ¾ß ÇÏ¹Ç·Î while¹® »ç¿ë
+		cout << "4.ì™¼ 6.ì˜¤ 8.ìœ„ 2.ì•„" << endl;
+		cin >> iInput;
+
+		int curPosX = m_pPlayer->GetXPos();
+		int curPosY = m_pPlayer->GetYPos();
+		bool bResult = 0;
+
+		switch (iInput)
 		{
-			cout << "1. °ø°İ 2. µµ¸Á 3. Æ÷¼Ç »ç¿ë" << endl;
+		case 4:
+			if (curPosX > 0)
+			{
+				bResult = OnMovement(curPosX - 1, curPosY);
+				if (bResult)
+					return;
+			}
+			break;
+		case 6:
+			if (curPosX < iMapXLen - 1)
+			{
+				bResult = OnMovement(curPosX + 1, curPosY);
+				if (bResult)
+					return;
+			}
+		case 8:
+			if (curPosY > 0)
+			{
+				bResult = OnMovement(curPosX, curPosY - 1);
+				if (bResult)
+					return;
+			}
+		case 2:
+			if (curPosY < iMapYLen -1)
+			{
+				bResult = OnMovement(curPosX, curPosY + 1);
+				if (bResult)
+					return;
+			}
+		default:
+			cout << "ì˜ëª»ëœ ì…ë ¥" << endl;
+			system("pause");
+			break;
+		}
+	}
+}
+
+bool CField::OnMovement(int targetPosX, int targetPosY) // return 0: ë„˜ì–´ê°€ê¸° ëª©ì , return 1: ìƒìœ„í•¨ìˆ˜ ì¢…ë£Œ ëª©ì 
+{
+	int curPosX = m_pPlayer->GetXPos();
+	int curPosY = m_pPlayer->GetYPos();
+
+	// í¬íƒˆ, ëª¬ìŠ¤í„° ì•„ë‹ ì‹œ ì´ë™.
+	if (m_Map[targetPosY][targetPosX] == nullptr)
+	{
+		swap(m_Map[curPosY][curPosX], m_Map[targetPosY][targetPosX]);
+		m_pPlayer->MovePos(targetPosX, targetPosY);
+		return 0;
+	}
+
+	// í¬íƒˆì¸ ê²½ìš°
+	else if (m_Map[targetPosY][targetPosX]->GetType() == ET_PORTAL)
+	{
+		bool bloop = 1;
+		while (bloop)
+		{
+			cout << "ë§ˆì„? (1.ì˜ˆ 2.ì•„ë‹ˆì˜¤) : ";
+			int iInput;
 			cin >> iInput;
 			switch (iInput)
 			{
 			case 1:
-				pMonster->OnAttacked(m_pPlayer);
+				Release(); // í•„ë“œ í•´ì œ í›„ ë§ˆì„ë¡œ
+				return 1;
 
-				if (pMonster->IsDead())
-				{
-					system("cls");
-					m_pPlayer->PrintInfo();
-					pMonster->PrintInfo();
-					cout << pMonster->GetName() << "À»(¸¦) ÇØÄ¡¿ü½À´Ï´Ù!" << endl;
-					system("pause");
-					system("cls");
-					SAFE_DELETE(pMonster);
-					return FR_WIN;
-				}
-
-				bTurnFinished = true;
-
-				break;
 			case 2:
-				cout << "ºñ°ÌÇÏ°Ô µµ¸ÁÀ» ¼±ÅÃÇß´Ù.." << endl;
+				return 0;
+			default:
+				cout << "ì˜ëª»ëœ ì…ë ¥" << endl;
 				system("pause");
-				system("cls");
-				return FR_RUN;
-			case 3:
-				if (m_pPlayer->SelectPotion())
-					bTurnFinished = true;
 				break;
 			}
-
-			if (bTurnFinished) break;
-		}
-		
-
-		system("pause");
-
-		// ¸ó½ºÅÍ ÅÏ
-		system("cls");
-		m_pPlayer->PrintInfo();
-		pMonster->PrintInfo();
-		cout << "ÀûÀÇ ÅÏÀÔ´Ï´Ù." << endl;
-		system("pause");
-		m_pPlayer->OnAttacked(pMonster);
-		system("pause");
-		if (m_pPlayer->IsDead())
-		{
-			system("cls");
-			m_pPlayer->PrintInfo();
-			pMonster->PrintInfo();
-			cout << pMonster->GetName() << "ÀÇ ÀÏ°İ¿¡ ´ç½ÅÀº Á×°í ¸»¾Ò½À´Ï´Ù.." << endl;
-			system("pause");
-			system("cls");
-			m_pPlayer->SetHpToMax();
-			return FR_LOSE;
 		}
 	}
 
-	return 0;
+	// ëª¬ìŠ¤í„°ì¸ ê²½ìš°
+	else if (m_Map[targetPosY][targetPosX]->GetType() == ET_MONSTER)
+	{
+		bool bloop = 1;
+		while (bloop)
+		{
+			cout << "ì „íˆ¬? (1.ì˜ˆ 2.ì•„ë‹ˆì˜¤) : ";
+			int iInput;
+			cin >> iInput;
+
+			int fightResult;
+			switch (iInput)
+			{
+			case 1:
+				fightResult = Fight(); // ì „íˆ¬
+				if (fightResult == 0)
+				{
+					return 0;
+				}
+				else if (fightResult == 1) // ëª¬ìŠ¤í„° ì²˜ì¹˜ ì‹œ
+				{
+					SAFE_DELETE(m_Map[targetPosY][targetPosX]); // ëª¬ìŠ¤í„° ë°ì´í„° í•´ì œ
+				}
+				else if (fightResult == 2) // ì‚¬ë§ ì‹œ ë§ˆì„ë¡œ ë³´ë‚´ê¸°
+				{
+					// íšŒë³µì€ ì „íˆ¬ ì´í›„? í˜¹ì€ ì—¬ê¸°?
+					Release();
+					return 1;
+				}
+				bloop = 0;
+				break;
+			case 2:
+				bloop = 0;
+				break;
+			default:
+				cout << "ì˜ëª»ëœ ì…ë ¥" << endl;
+				system("pause");
+				break;
+			}
+		}
+	}
+}
+
+void CField::Release()
+{
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (m_Map[i][j] && m_Map[i][j]->GetType() != ET_PLAYER)
+				SAFE_DELETE(m_Map[i][j]);
+		}
+	}
+}
+
+void CField::Render()
+{
+	for (int i = 0; i < iMapXLen + 2; ++i)
+		cout << 'w';
+
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		cout << endl << 'w';
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (m_Map[i][j] == nullptr)
+				cout << ' ';
+			else if (m_Map[i][j]->GetType() == ET_PLAYER)
+				cout << 'i';
+			else if (m_Map[i][j]->GetType() == ET_PORTAL)
+				cout << 'p';
+			else if (m_Map[i][j]->GetType() == ET_MONSTER)
+				cout << 'm';
+		}
+		cout << 'w';
+	}
+	cout << endl;
+	for (int i = 0; i < iMapXLen + 2; ++i)
+		cout << 'w';
+}
+
+
+int CField::Fight()
+{
+	// ë„ë§ ì‹œ 0 ë°˜í™˜
+	// ì²˜ì¹˜ ì‹œ 1 ë°˜í™˜
+	// ì‚¬ë§ ì‹œ 2 ë°˜í™˜
+	return 1;
 }
