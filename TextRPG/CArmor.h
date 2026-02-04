@@ -13,7 +13,9 @@ public:
 		pPlayer->SetMaxHp(m_iMaxHpIncrement);
 	}
 	virtual void Unequip(CPlayer* pplayer) {
-		pplayer->UnequipItem(IT_ARMOR);
+		if (pplayer->GetEquipItem(IT_ARMOR) == this) {
+			pplayer->SetMaxHp(-m_iMaxHpIncrement);
+		}
 	}
 
 	CArmor(int iEquipRarity) : CEquipment(IT_ARMOR, iEquipRarity), m_iMaxHpIncrement(0)

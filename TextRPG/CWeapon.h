@@ -14,8 +14,10 @@ public:
 		pPlayer->SetAtk(m_iAtkIncrement);
 	}
 	virtual void Unequip(CPlayer* pplayer) {
-		pplayer->SetAtk(-m_iAtkIncrement);
-		//pplayer->UnequipItem(IT_WEAPON);
+		if (pplayer->GetEquipItem(IT_WEAPON) == this) {
+			pplayer->SetAtk(-m_iAtkIncrement);
+			// pplayer->ClearSlot(IT_WEAPON);	// 아이템 슬롯 관리를 아이템에서 할 필요가 있을까? (플레이어에서 할 것)
+		}
 	}
 
 	CWeapon(int iEquipRarity) : CEquipment(IT_WEAPON, iEquipRarity), m_iAtkIncrement(0)

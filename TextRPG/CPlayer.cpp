@@ -88,10 +88,7 @@ void CPlayer::EquipItem(int ItemType, CItem* pItem)
 
 void CPlayer::UnequipItem(int ItemType)
 {
-	if (m_pItemSlot[ItemType]) {
-		static_cast<CEquipment*>(m_pItemSlot[ItemType])->Unequip(this);
-		m_pItemSlot[ItemType] = nullptr;
-	}
+	m_pItemSlot[ItemType] = nullptr;
 }
 
 //void CPlayer::ManagementMoney(CPlayer* playerMoney, int UsedMoney)

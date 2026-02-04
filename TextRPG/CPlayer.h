@@ -48,6 +48,9 @@ public:
 	void EquipItem(int ItemType, CItem* pItem);
 	void UnequipItem(int ItemType);
 
+	CItem* GetEquipItem(int ItemType) { return m_pItemSlot[ItemType]; }		// 장착한 아이템 정보(아이템 장착 해제 시 확인 용)
+	//void ClearSlot(int ItemType) { m_pItemSlot[ItemType] = nullptr; }		// 장착 해제 후 아이템 슬롯 비우기 (쓸데없이 왔다갔다... 삭제이유는 cweapon 참조)
+
 	void SetAtk(int iAtk) { m_iAtk += iAtk; }
 	void SetMaxHp(int iHp) { m_iMaxHp += iHp; }
 };
