@@ -26,7 +26,7 @@ public:
 	void	Render();
 	void	SetPlayer(CEntity* pPlayer) { m_pPlayer = pPlayer; };
 	bool	OnMovement(int targetPosX, int targetPosY);
-	int		Fight();
+	int		Fight(CEntity* pMonster);
 
 };
 
