@@ -11,9 +11,6 @@ private:
 	int m_iMoney;
 	int m_iItemCount[IT_COUNT];
 	CItem* m_pItem[IT_COUNT][ITEM_MAX_COUNT];
-	CItem* m_pItemSlot[IT_COUNT];
-
-	bool bIncrement = false;
 
 public:
 	CPlayer() : CCreature(ET_PLAYER), m_iMoney(0), m_iItemCount{}, m_pItem{}
@@ -22,14 +19,11 @@ public:
 		m_iHp = PLAYER_INITIAL_MAX_HP;
 		m_iMaxHp = PLAYER_INITIAL_MAX_HP;
 		m_iAtk = PLAYER_INITIAL_ATK;
-
-		m_iMoney = 10000;	// 첫 소지금 1만원(TEST용)
-		memset(&m_pItemSlot, 0, sizeof(m_pItemSlot));
 	}
 
 public:
 	void AddHp(int iValue);
-	 
+
 	void SetHpToMax();
 
 	bool SelectPotion(); 
@@ -37,20 +31,4 @@ public:
 	void UsePotion(int iIndex);
 	void AddItem(CItem* pItem);
 
-	int GetMoney() { return m_iMoney; }
-	void SetMoney(int UsedMoney) { m_iMoney -= UsedMoney; }
-
-	// void ManagementMoney(CPlayer* playerMoney, int UsedMoney);	// 돈관리용(이 방식 너무 구림.. 위 get,set으로 변경)
-
-	int GetItemCount(int ItemType) { return m_iItemCount[ItemType]; }
-	CItem* GetItem(int ItemType, int iIndex) { return m_pItem[ItemType][iIndex]; }
-
-	void EquipItem(int ItemType, CItem* pItem);
-	void UnequipItem(int ItemType);
-
-	CItem* GetEquipItem(int ItemType) { return m_pItemSlot[ItemType]; }		// 장착한 아이템 정보(아이템 장착 해제 시 확인 용)
-	//void ClearSlot(int ItemType) { m_pItemSlot[ItemType] = nullptr; }		// 장착 해제 후 아이템 슬롯 비우기 (쓸데없이 왔다갔다... 삭제이유는 cweapon 참조)
-
-	void SetAtk(int iAtk) { m_iAtk += iAtk; }
-	void SetMaxHp(int iHp) { m_iMaxHp += iHp; }
 };
