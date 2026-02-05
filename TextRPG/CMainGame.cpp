@@ -46,6 +46,8 @@ void CMainGame::Update()
 		cout << "---------------[마을]---------------" << endl;
 		cout << "1. 사냥터 2. 상점 3. 인벤토리 4. 종료" << endl;
 		cin >> iInput;
+		
+		//m_pPlayer->ManagementMoney(m_pPlayer, 0); TEST
 
 		switch (iInput)
 		{
