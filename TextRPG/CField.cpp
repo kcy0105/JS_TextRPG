@@ -5,8 +5,9 @@
 #include "CNormalMonster.h"
 #include "CPlayer.h"
 
-#include "Define.h"
-#include "pch.h"
+CField::CField() : m_pPlayer(nullptr)
+{
+}
 
 void CField::Initialize()
 {
@@ -63,10 +64,18 @@ void CField::Initialize()
 
 void CField::Update()
 {
-	// TEST
-	CMonster* pMonster = new CEasyMonster();
-	Fight(pMonster);
-}
+	while (1)
+	{
+		system("cls");
+		Render();
+		int iInput;
+
+		cout << "4.왼 6.오 8.위 2.아" << endl;
+		cin >> iInput;
+
+		int curPosX = m_pPlayer->GetXPos();
+		int curPosY = m_pPlayer->GetYPos();
+		bool bResult = 0;
 
 		switch (iInput)
 		{
@@ -110,27 +119,55 @@ void CField::Update()
 	}
 }
 
-int CField::Fight(CMonster* pMonster)
+bool CField::OnMovement(int targetPosX, int targetPosY) // return 0: 넘어가기 목적, return 1: 상위함수 종료 목적
 {
-	cout << "��! �߻��� " << pMonster->GetName() << "��(��) �߰��ߴ�!" << endl;
-	system("pause");
+	int curPosX = m_pPlayer->GetXPos();
+	int curPosY = m_pPlayer->GetYPos();
 
-	int iInput;
-
-	while (true)
+	// 포탈, 몬스터 아닐 시 이동.
+	if (m_Map[targetPosY][targetPosX] == nullptr)
 	{
-		// �÷��̾� ��
-		system("cls");
-		m_pPlayer->PrintInfo();
-		pMonster->PrintInfo();
-		
-		cout << "����� ���Դϴ�." << endl;
-		bool bTurnFinished = false;
+		swap(m_Map[curPosY][curPosX], m_Map[targetPosY][targetPosX]);
+		m_pPlayer->MovePos(targetPosX, targetPosY);
+		return 0;
+	}
 
-		while (true) // ���� �̼��� �� �ٽ� �����ؾ� �ϹǷ� while�� ���
+	// 포탈인 경우
+	else if (m_Map[targetPosY][targetPosX]->GetType() == ET_PORTAL)
+	{
+		bool bloop = 1;
+		while (bloop)
 		{
-			cout << "1. ���� 2. ���� 3. ���� ���" << endl;
+			cout << "마을? (1.예 2.아니오) : ";
+			int iInput;
 			cin >> iInput;
+			switch (iInput)
+			{
+			case 1:
+				Release(); // 필드 해제 후 마을로
+				return 1;
+
+			case 2:
+				return 0;
+			default:
+				cout << "잘못된 입력" << endl;
+				system("pause");
+				break;
+			}
+		}
+	}
+
+	// 몬스터인 경우
+	else if (m_Map[targetPosY][targetPosX]->GetType() == ET_MONSTER)
+	{
+		bool bloop = 1;
+		while (bloop)
+		{
+			cout << "전투? (1.예 2.아니오) : ";
+			int iInput;
+			cin >> iInput;
+
+			int fightResult;
 			switch (iInput)
 			{
 			case 1:
@@ -145,56 +182,61 @@ int CField::Fight(CMonster* pMonster)
 				}
 				else if (fightResult == FR_LOSE) // 사망 시 마을로 보내기
 				{
-					system("cls");
-					m_pPlayer->PrintInfo();
-					pMonster->PrintInfo();
-					cout << pMonster->GetName() << "��(��) ��ġ�����ϴ�!" << endl;
-					system("pause");
-					system("cls");
-					SAFE_DELETE(pMonster);
-					return FR_WIN;
+					// 회복은 전투 이후? 혹은 여기?
+					Release();
+					return 1;
 				}
-
-				bTurnFinished = true;
-
+				bloop = 0;
 				break;
 			case 2:
-				cout << "����ϰ� ������ �����ߴ�.." << endl;
+				bloop = 0;
+				break;
+			default:
+				cout << "잘못된 입력" << endl;
 				system("pause");
-				system("cls");
-				return FR_RUN;
-			case 3:
-				if (m_pPlayer->SelectPotion())
-					bTurnFinished = true;
 				break;
 			}
-
-			if (bTurnFinished) break;
-		}
-		
-
-		system("pause");
-
-		// ���� ��
-		system("cls");
-		m_pPlayer->PrintInfo();
-		pMonster->PrintInfo();
-		cout << "���� ���Դϴ�." << endl;
-		system("pause");
-		m_pPlayer->OnAttacked(pMonster);
-		system("pause");
-		if (m_pPlayer->IsDead())
-		{
-			system("cls");
-			m_pPlayer->PrintInfo();
-			pMonster->PrintInfo();
-			cout << pMonster->GetName() << "�� �ϰݿ� ����� �װ� ���ҽ��ϴ�.." << endl;
-			system("pause");
-			system("cls");
-			m_pPlayer->SetHpToMax();
-			return FR_LOSE;
 		}
 	}
+}
+
+void CField::Release()
+{
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (m_Map[i][j] && m_Map[i][j]->GetType() != ET_PLAYER)
+				SAFE_DELETE(m_Map[i][j]);
+		}
+	}
+}
+
+void CField::Render()
+{
+	for (int i = 0; i < iMapXLen + 2; ++i)
+		cout << 'w';
+
+	for (int i = 0; i < iMapYLen; ++i)
+	{
+		cout << endl << 'w';
+		for (int j = 0; j < iMapXLen; ++j)
+		{
+			if (m_Map[i][j] == nullptr)
+				cout << ' ';
+			else if (m_Map[i][j]->GetType() == ET_PLAYER)
+				cout << 'i';
+			else if (m_Map[i][j]->GetType() == ET_PORTAL)
+				cout << 'p';
+			else if (m_Map[i][j]->GetType() == ET_MONSTER)
+				cout << 'm';
+		}
+		cout << 'w';
+	}
+	cout << endl;
+	for (int i = 0; i < iMapXLen + 2; ++i)
+		cout << 'w';
+}
 
 // 전투:
 // 도망 시 0 반환

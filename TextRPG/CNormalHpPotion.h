@@ -13,6 +13,5 @@ public:
 	CNormalHpPotion() : CPotion(PT_NORMAL_HP) 
 	{
 		m_szName = NORMAL_HP_POTION_NAME;
-		m_iPrice = NORMAL_POTION_PRICE;
 	}
 };
