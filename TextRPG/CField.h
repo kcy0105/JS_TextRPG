@@ -18,7 +18,10 @@ public:
 	void Release();
 
 public:
-	void SetPlayer(CPlayer* pPlayer) { m_pPlayer = pPlayer; }
+	void	Render();
+	void	SetPlayer(CEntity* pPlayer) { m_pPlayer = pPlayer; };
+	bool	OnMovement(int targetPosX, int targetPosY);
+	int		Fight(CEntity* pMonster);
 
 private:
 	int Fight(CMonster* pMonster);

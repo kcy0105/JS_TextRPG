@@ -1,4 +1,4 @@
-#include "CMainGame.h"
+ï»¿#include "CMainGame.h"
 #include "CPlayer.h"
 #include "CField.h"
 #include "CStore.h"
@@ -15,10 +15,10 @@ void CMainGame::Initialize()
 	if (!m_pField)
 	{
 		m_pField = new CField;
-		// m_pField->Initialize(); ÀÔÀå ½Ã Initialize
+		m_pField->SetPlayer(m_pPlayer);
+		m_pField->Initialize(); // ìž…ìž¥ ì‹œ Initialize
 	}
 
-	m_pField->SetPlayer(m_pPlayer);
 
 	if (!m_pStore)
 	{
@@ -43,8 +43,8 @@ void CMainGame::Update()
 
 	while (true)
 	{
-		cout << "---------------[¸¶À»]---------------" << endl;
-		cout << "1. »ç³ÉÅÍ 2. »óÁ¡ 3. ÀÎº¥Åä¸® 4. Á¾·á" << endl;
+		cout << "---------------[ë§ˆì„]---------------" << endl;
+		cout << "1. ì‚¬ëƒ¥í„° 2. ìƒì  3. ì¸ë²¤í† ë¦¬ 4. ì¢…ë£Œ" << endl;
 		cin >> iInput;
 		
 		//m_pPlayer->ManagementMoney(m_pPlayer, 0); TEST
