@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Define.h"
-#include "pch.h"
-
 class CPlayer;
 
 class CInventory

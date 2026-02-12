@@ -1,6 +1,5 @@
 #pragma once
 #include "CPotion.h"
-#include "Define.h"
 
 class CPlayer;
 

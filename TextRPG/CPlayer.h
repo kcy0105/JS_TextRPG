@@ -1,6 +1,5 @@
 #pragma once
 #include "CCreature.h"
-#include "Define.h"
 #include <cstring>
 
 class CItem;

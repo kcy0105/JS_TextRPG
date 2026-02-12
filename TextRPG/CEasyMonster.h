@@ -1,6 +1,5 @@
 #pragma once
 #include "CMonster.h"
-#include "Define.h"
 
 class CEasyMonster : public CMonster
 {

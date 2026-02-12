@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "CInventory.h"
 #include "CPlayer.h"
 #include "CItem.h"

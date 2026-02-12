@@ -1,8 +1,6 @@
 #pragma once
 
 #include "CEntity.h"
-#include "pch.h"
-using namespace std;
 
 class CCreature : public CEntity
 {

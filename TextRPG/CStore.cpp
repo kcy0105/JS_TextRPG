@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "CStore.h"
 #include "CPlayer.h"
 #include "CNormalHpPotion.h"
@@ -8,16 +9,32 @@
 
 void CStore::Initialize()
 {
-	vecItemList[IT_WEAPON].push_back({ EQUIP_NORMAL_SUFFIX + BASIC_WEAPON_NAME, NORMAL_ITEM_PRICE });
-	vecItemList[IT_WEAPON].push_back({ EQUIP_RARE_SUFFIX + BASIC_WEAPON_NAME, RARE_ITEM_PRICE });
-	vecItemList[IT_WEAPON].push_back({ EQUIP_EPIC_SUFFIX + BASIC_WEAPON_NAME, EPIC_ITEM_PRICE });
+	vecItemList[IT_WEAPON].push_back({	EQUIP_NORMAL_SUFFIX + BASIC_WEAPON_NAME, 
+										NORMAL_ITEM_PRICE,
+										[]()->CItem*{ return new CWeapon(ER_NORMAL); } });
+	vecItemList[IT_WEAPON].push_back({	EQUIP_RARE_SUFFIX + BASIC_WEAPON_NAME,
+										RARE_ITEM_PRICE,
+										[]()->CItem* { return new CWeapon(ER_RARE); } });
+	vecItemList[IT_WEAPON].push_back({	EQUIP_EPIC_SUFFIX + BASIC_WEAPON_NAME, 
+										EPIC_ITEM_PRICE, 
+										[]()->CItem* { return new CWeapon(ER_EPIC); } });
 
-	vecItemList[IT_ARMOR].push_back({ EQUIP_NORMAL_SUFFIX + BASIC_ARMOR_NAME, NORMAL_ITEM_PRICE });
-	vecItemList[IT_ARMOR].push_back({ EQUIP_RARE_SUFFIX + BASIC_ARMOR_NAME, RARE_ITEM_PRICE });
-	vecItemList[IT_ARMOR].push_back({ EQUIP_EPIC_SUFFIX + BASIC_ARMOR_NAME, EPIC_ITEM_PRICE });
+	vecItemList[IT_ARMOR].push_back({	EQUIP_NORMAL_SUFFIX + BASIC_ARMOR_NAME,
+										NORMAL_ITEM_PRICE,
+										[]()->CItem* { return new CArmor(ER_NORMAL); } });
+	vecItemList[IT_ARMOR].push_back({	EQUIP_RARE_SUFFIX + BASIC_ARMOR_NAME, 
+										RARE_ITEM_PRICE, 
+										[]()->CItem* { return new CArmor(ER_RARE); } });
+	vecItemList[IT_ARMOR].push_back({	EQUIP_EPIC_SUFFIX + BASIC_ARMOR_NAME,
+										EPIC_ITEM_PRICE,
+										[]()->CItem* { return new CArmor(ER_EPIC); } });
 
-	vecItemList[IT_POTION].push_back({ NORMAL_HP_POTION_NAME, NORMAL_POTION_PRICE });
-	vecItemList[IT_POTION].push_back({ MAX_HP_POTION_NAME, MAXHP_POTION_PRICE });
+	vecItemList[IT_POTION].push_back({	NORMAL_HP_POTION_NAME, 
+										NORMAL_POTION_PRICE, 
+										[]()->CItem* { return new CNormalHpPotion(); } });
+	vecItemList[IT_POTION].push_back({	MAX_HP_POTION_NAME, 
+										MAXHP_POTION_PRICE, 
+										[]()->CItem* { return new CMaxHpPotion(); } });
 }
 
 void CStore::Update()
@@ -49,10 +66,6 @@ void CStore::Update()
 		}
 
 	}
-
-	//// TEST
-	//m_pPlayer->AddItem(new CNormalHpPotion);
-	//m_pPlayer->AddItem(new CMaxHpPotion);
 }
 
 void CStore::Release()
@@ -95,25 +108,7 @@ void CStore::Render(int ItemType)
 		if (iInput == 0) { return; }
 		else if (iInput > 0 && iInput - 1 < vecItemList[ItemType].size()) {
 			if (m_pPlayer->GetMoney() >= vecItemList[ItemType][iInput - 1].iPrice) {
-				switch (ItemType) {
-				case IT_WEAPON:
-					m_pPlayer->AddItem(new CWeapon(iInput - 1));
-					break;
-				case IT_ARMOR:
-					m_pPlayer->AddItem(new CArmor(iInput - 1));
-					break;
-				case IT_POTION:
-					if (iInput == 1) {
-						m_pPlayer->AddItem(new CNormalHpPotion());
-					}
-					else if (iInput == 2) {
-						m_pPlayer->AddItem(new CMaxHpPotion());
-					}
-					break;
-				default:
-					break;
-				}
-
+				m_pPlayer->AddItem(vecItemList[ItemType][iInput - 1].factory());
 				m_pPlayer->SetMoney(vecItemList[ItemType][iInput - 1].iPrice);
 
 				cout << "구매 완료!" << endl;

@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "CEntity.h"
 
 class CPlayer;
+class CEntity;
 
 class CField
 {

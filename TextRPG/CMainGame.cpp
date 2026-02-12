@@ -1,9 +1,10 @@
-﻿#include "CMainGame.h"
+﻿#include "pch.h"
+#include "CMainGame.h"
 #include "CPlayer.h"
 #include "CField.h"
 #include "CStore.h"
 #include "CInventory.h"
-#include "pch.h"
+
 
 void CMainGame::Initialize()
 {

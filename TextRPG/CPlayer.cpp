@@ -1,8 +1,8 @@
+#include "pch.h"
 #include "CPlayer.h"
 #include "CPotion.h"
 #include "CWeapon.h"
 #include "CArmor.h"
-#include "pch.h"
 
 void CPlayer::AddHp(int iValue)
 {
