@@ -21,4 +21,3 @@ private:
 	CStore* m_pStore;
 	CInventory* m_pInventory;
 };
-

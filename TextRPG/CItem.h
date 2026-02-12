@@ -20,5 +20,6 @@ public:
 public:
 	int GetItemType() const { return m_iItemType; }
 	string GetName() const { return m_szName; }
+	int GetPrice() const { return m_iPrice; }
 };
 
