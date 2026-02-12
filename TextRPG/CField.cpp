@@ -1,6 +1,5 @@
-﻿#include "CField.h"
-#include "Define.h"
-#include "pch.h"
+﻿#include "pch.h"
+#include "CField.h"
 #include "CEasyMonster.h"
 #include "CNormalMonster.h"
 #include "CPlayer.h"

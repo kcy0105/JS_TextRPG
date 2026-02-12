@@ -1,13 +1,12 @@
 #pragma once
 
-#include "CItem.h"
-#include "Define.h"
-
 class CPlayer;
+class CItem;
 
 struct ItemInfo {
 	string szName;
 	int iPrice;
+	CItem* (*factory)();
 };
 
 

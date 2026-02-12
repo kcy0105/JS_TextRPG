@@ -1,4 +1,5 @@
-﻿#include "CEntity.h"
+﻿#include "pch.h"
+#include "CEntity.h"
 
 void CEntity::MovePos(int newXPos, int newYPos)
 {

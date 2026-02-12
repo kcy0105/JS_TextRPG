@@ -1,5 +1,5 @@
-#include "CCreature.h"
 #include "pch.h"
+#include "CCreature.h"
 
 void CCreature::PrintInfo()
 {

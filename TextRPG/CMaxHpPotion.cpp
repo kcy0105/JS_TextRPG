@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "CMaxHpPotion.h"
 #include "CPlayer.h"
 

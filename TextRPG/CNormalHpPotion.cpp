@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "CNormalHpPotion.h"
 #include "CPlayer.h"
 

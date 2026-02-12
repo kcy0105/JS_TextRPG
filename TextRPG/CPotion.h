@@ -1,6 +1,5 @@
 #pragma once
 #include "CItem.h"
-#include "Define.h"
 
 class CPlayer;
 

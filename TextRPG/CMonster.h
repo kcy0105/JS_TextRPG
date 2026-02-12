@@ -1,6 +1,5 @@
 #pragma once
 #include "CCreature.h"
-#include "Define.h"
 
 class CMonster : public CCreature
 {
