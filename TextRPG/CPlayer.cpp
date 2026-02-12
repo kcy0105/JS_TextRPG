@@ -1,5 +1,7 @@
 #include "CPlayer.h"
 #include "CPotion.h"
+#include "CWeapon.h"
+#include "CArmor.h"
 #include "pch.h"
 
 void CPlayer::AddHp(int iValue)
@@ -73,4 +75,18 @@ void CPlayer::AddItem(CItem* pItem)
 {
 	int iItemType = pItem->GetItemType();
 	m_pItem[iItemType][m_iItemCount[iItemType]++] = pItem;
+}
+
+void CPlayer::EquipItem(int ItemType, CItem* pItem)
+{
+	if (m_pItemSlot[ItemType]) {
+		static_cast<CEquipment*>(m_pItemSlot[ItemType])->Unequip(this);
+	}
+
+	m_pItemSlot[ItemType] = pItem;
+}
+
+void CPlayer::UnequipItem(int ItemType)
+{
+	m_pItemSlot[ItemType] = nullptr;
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Define.h"
+#include "pch.h"
+
 class CPlayer;
 
 class CInventory
@@ -15,6 +18,8 @@ public:
 	void Initialize();
 	void Update();
 	void Release();
+
+	void Render(int ItemType);
 
 public:
 	void SetPlayer(CPlayer* pPlayer) { m_pPlayer = pPlayer; }

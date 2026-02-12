@@ -10,6 +10,7 @@ private:
 
 public:
 	virtual void Equip(CPlayer* pPlayer) = 0;
+	virtual void Unequip(CPlayer* pPlayer) = 0;
 
 	CEquipment(int iItemType, int iEquipRarity) : CItem(iItemType), m_iEquipRarity(iEquipRarity)
 	{
